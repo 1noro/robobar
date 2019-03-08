@@ -23,14 +23,15 @@ delimiter ;^
 		drop table if exists BOBT_CAMARERO;
 		drop table if exists BOBT_TIPO_PRODUCTO;
 		drop table if exists BOBT_COMEDOR;
-        drop table if exists BOBT_LISTA_CONSUMICIONES;
+		drop table if exists BOBT_LISTA_CONSUMICIONES;
         
 		drop table if exists BOBT_PRODUCTO;
 		drop table if exists BOBT_MESA;
 		drop table if exists BOBT_CLIENTE;
-		drop table if exists BOBT_PAGO;
 		
 		drop table if exists BOBT_PRODUCTO_LISTA;
+        
+        drop table if exists BOBT_PAGO;
         
         -- ---------------------------------------------------------------------
         
@@ -44,7 +45,7 @@ delimiter ;^
         create table BOBT_TIPO_PRODUCTO (
 			id integer not null,
 			nombre varchar(100) not null,
-            precio_por_defecto integer not null,
+            precio_por_defecto float not null,
 			descripcion varchar(400),
 			img varchar(200),
 			primary key (id)
@@ -54,6 +55,7 @@ delimiter ;^
 			id integer not null,
 			nombre varchar(50) not null,
 			descripcion varchar(400),
+            img varchar(200),
 			primary key (id)
 		);
         
@@ -64,7 +66,7 @@ delimiter ;^
         
         create table BOBT_PRODUCTO (
 			id integer not null,
-			precio_real integer not null,
+			precio_real float not null,
             id_tipo_producto integer not null,
 			comentario varchar(400),
 			primary key (id),
@@ -74,6 +76,7 @@ delimiter ;^
         create table BOBT_MESA (
 			id integer not null,
             localizacion varchar(400) not null,
+            activo boolean not null,
             id_comedor integer not null,
             id_lista_consumiciones integer not null,
 			descripcion varchar(400),
@@ -84,11 +87,21 @@ delimiter ;^
         
         create table BOBT_CLIENTE (
 			id integer not null,
-            alias varchar(50) not null,
+            nombre varchar(50) not null,
             id_mesa integer not null,
 			descripcion varchar(400),
 			primary key (id),
             foreign key (id_mesa) references BOBT_MESA(id)
+		);
+        
+        create table BOBT_PRODUCTO_LISTA (
+			id_lista_consumiciones integer not null,
+            id_producto integer not null,
+            fecha date not null,
+            hora time not null,
+			primary key (id_lista_consumiciones, id_producto),
+            foreign key (id_lista_consumiciones) references BOBT_LISTA_CONSUMICIONES(id),
+            foreign key (id_producto) references BOBT_PRODUCTO(id)
 		);
         
         create table BOBT_PAGO (
@@ -105,16 +118,6 @@ delimiter ;^
             foreign key (id_lista_consumiciones) references BOBT_LISTA_CONSUMICIONES(id)
 		);
         
-        create table BOBT_PRODUCTO_LISTA (
-			id_lista_consumiciones integer not null,
-            id_producto integer not null,
-            fecha date not null,
-            hora time not null,
-			primary key (id_lista_consumiciones, id_producto),
-            foreign key (id_lista_consumiciones) references BOBT_LISTA_CONSUMICIONES(id),
-            foreign key (id_producto) references BOBT_PRODUCTO(id)
-		);
-		
 	end;^
 
 delimiter ;
