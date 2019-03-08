@@ -1,10 +1,10 @@
 /**
-	<p>Ejecucion de comandos de prueba de la base de datos "BOBDB".</p>
+    <p>Ejecucion de comandos de prueba de la base de datos "BOBDB".</p>
 
-	@author		Inoro
-	@file		bobdb-dml-test.sql
-	@since		20190307
-	@version	public
+    @author     Inoro
+    @file       bobdb-dml-test.sql
+    @since      20190307
+    @version    public
 */
 
 -- PREVIOS ---------------------------------------------------------------------
