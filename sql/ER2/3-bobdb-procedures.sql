@@ -155,11 +155,12 @@ delimiter ;^
         in _id_mesa integer,
         in _id_producto integer,
         in _fecha date,
-        in _hora time
+        in _hora time,
+        in _comentario varchar(400)
     ) begin
         
-        insert into BOBT_PRODUCTO_LISTA(id_mesa,id_producto,fecha,hora) 
-            values(_id_mesa,_id_producto,_fecha,_hora);
+        insert into BOBT_PRODUCTO_MESA(id_mesa,id_producto,fecha,hora,comentario) 
+            values(_id_mesa,_id_producto,_fecha,_hora,_comentario);
         
     end;^
     
@@ -183,8 +184,8 @@ delimiter ;^
             set _new_id=_last_id+1;
         end if;
         
-        insert into BOBT_PAGO(id,fecha,hora,id_mesa,id_cliente,id_camarero,comentario) 
-            values(_new_id,_fecha,_hora,_id_mesa,_id_cliente,_id_camarero,_comentario);
+        insert into BOBT_PAGO(id,fecha,hora,pagado,id_mesa,id_cliente,id_camarero,cantidad_entregada,comentario) 
+            values(_new_id,_fecha,_hora,false,_id_mesa,_id_cliente,_id_camarero,null,_comentario);
         
     end;^
     
@@ -194,7 +195,7 @@ delimiter ;^
         in _id_producto integer
     ) begin
         
-        insert into BOBT_PRODUCTO_LISTA(id_pago,id_producto) 
+        insert into BOBT_PRODUCTO_PAGO(id_pago,id_producto) 
             values(_id_pago,_id_producto);
         
     end;^
@@ -322,6 +323,19 @@ delimiter ;^
         
     end;^
     
+    drop procedure if exists BOBP_PRODUCTO_MESA_SINSERT;^
+    create procedure BOBP_PRODUCTO_MESA_SINSERT(
+        in _id_mesa integer,
+        in _id_producto integer,
+        in _fecha date,
+        in _hora time
+    ) begin
+        
+        insert into BOBT_PRODUCTO_MESA(id_mesa,id_producto,fecha,hora) 
+            values(_id_mesa,_id_producto,_fecha,_hora);
+        
+    end;^
+    
     drop procedure if exists BOBP_PAGO_SINSERT;^
     create procedure BOBP_PAGO_SINSERT(
         in _fecha date,
@@ -341,11 +355,83 @@ delimiter ;^
             set _new_id=_last_id+1;
         end if;
         
-        insert into BOBT_PAGO(id,fecha,hora,id_mesa,id_cliente,id_camarero) 
-            values(_new_id,_fecha,_hora,_id_mesa,_id_cliente,_id_camarero);
+        insert into BOBT_PAGO(id,fecha,hora,pagado,id_mesa,id_cliente,id_camarero) 
+            values(_new_id,_fecha,_hora,false,_id_mesa,_id_cliente,_id_camarero);
+        
+    end;^
+
+    -- GETTERS ------------------------------------------------------------------
+    
+    drop procedure if exists BOBP_GET_ID_PRODUCTO_FROM_MESA;^
+    create procedure BOBP_GET_ID_PRODUCTO_FROM_MESA(
+        in _id_mesa integer
+    ) begin
+    
+        select BOBT_PRODUCTO_MESA.id_producto
+        from BOBT_MESA
+            join BOBT_PRODUCTO_MESA
+                on BOBT_PRODUCTO_MESA.id_mesa = BOBT_MESA.id
+        where BOBT_PRODUCTO_MESA.id_mesa = _id_mesa;
         
     end;^
     
-    -- DELETE -------------------------------------------------------------------
+    drop procedure if exists BOBP_GET_PRODUCTO_FROM_MESA;^
+    create procedure BOBP_GET_PRODUCTO_FROM_MESA(
+        in _id_mesa integer
+    ) begin
+    
+        select 
+            BOBT_PRODUCTO.id as id_producto, 
+            BOBT_PRODUCTO.precio_real, 
+            BOBT_PRODUCTO.comentario as comentario1, 
+            BOBT_PRODUCTO_MESA.comentario as comentario2, 
+            BOBT_TIPO_PRODUCTO.nombre, 
+            BOBT_TIPO_PRODUCTO.descripcion, 
+            BOBT_TIPO_PRODUCTO.img
+        from BOBT_MESA
+            join BOBT_PRODUCTO_MESA
+                on BOBT_PRODUCTO_MESA.id_mesa = BOBT_MESA.id
+            join BOBT_PRODUCTO
+                on BOBT_PRODUCTO.id = BOBT_PRODUCTO_MESA.id_producto
+            join BOBT_TIPO_PRODUCTO
+                on BOBT_TIPO_PRODUCTO.id = BOBT_PRODUCTO.id_tipo_producto
+        where BOBT_PRODUCTO_MESA.id_mesa = _id_mesa;
+        
+    end;^
+    
+    drop procedure if exists BOBP_GET_PRODUCTO_FROM_PAGO;^
+    create procedure BOBP_GET_PRODUCTO_FROM_PAGO(
+        in _id_pago integer
+    ) begin
+    
+        select 
+            BOBT_PRODUCTO.id as id_producto, 
+            BOBT_PRODUCTO.precio_real, 
+            BOBT_PRODUCTO.comentario,
+            BOBT_TIPO_PRODUCTO.nombre, 
+            BOBT_TIPO_PRODUCTO.descripcion, 
+            BOBT_TIPO_PRODUCTO.img
+        from BOBT_PAGO
+            join BOBT_PRODUCTO_PAGO
+                on BOBT_PRODUCTO_PAGO.id_pago = BOBT_PAGO.id
+            join BOBT_PRODUCTO
+                on BOBT_PRODUCTO.id = BOBT_PRODUCTO_PAGO.id_producto
+            join BOBT_TIPO_PRODUCTO
+                on BOBT_TIPO_PRODUCTO.id = BOBT_PRODUCTO.id_tipo_producto
+        where BOBT_PRODUCTO_PAGO.id_pago = _id_pago;
+        
+    end;^
+    
+    drop procedure if exists BOBP_ADD_PRODUCTO_TO_PAGO;^
+    create procedure BOBP_ADD_PRODUCTO_TO_PAGO(
+        in _id_producto integer,
+        in _id_mesa integer,
+        in _id_pago integer
+    ) begin
+    
+        call BOBP_PRODUCTO_PAGO_INSERT(_id_pago,_id_producto);
+        delete from BOBT_PRODUCTO_MESA where BOBT_PRODUCTO_MESA.id_producto = _id_producto;
+        
+    end;^
 
 delimiter ;
