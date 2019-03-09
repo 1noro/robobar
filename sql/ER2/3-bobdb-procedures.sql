@@ -433,5 +433,10 @@ delimiter ;^
         delete from BOBT_PRODUCTO_MESA where BOBT_PRODUCTO_MESA.id_producto = _id_producto;
         
     end;^
+    
+    -- FALTAN -------------------------------------------------------------------
+    -- BOBP_GET_ID_PRODUCTO_FROM_PAGO
+    -- BOBP_FINALIZAR_PAGO(id_pago,cantidad_entregada)
+    -- BOBP_FINALIZAR_MESA(id_mesa)
 
 delimiter ;
