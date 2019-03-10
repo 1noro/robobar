@@ -36,11 +36,11 @@ call BOBP_PRODUCTO_SINSERT(1.70,4); -- kas naranja
 call BOBP_PRODUCTO_INSERT(1.70,2,'estrella2');
 call BOBP_PRODUCTO_INSERT(1.70,2,'estrella3');
 
-call BOBP_MESA_INSERT('0,0::1,0::0,1::1,1',1,'La barra del Bar.');
-call BOBP_MESA_INSERT('0,0::1,0::0,1::1,1',2,'Junto al Peteiro.');
+call BOBP_MESA_INSERT('0,0::1,0::0,1::1,1',1,'La barra del Bar.','barra.jpg');
+call BOBP_MESA_INSERT('0,0::1,0::0,1::1,1',2,'Junto al Peteiro.','peteiro1.jpg');
 call BOBP_MESA_SINSERT('0,0::1,0::0,1::1,1',3);
-call BOBP_MESA_INSERT('0,0::1,0::0,1::1,1',4,'Mesa junto al bar.');
-call BOBP_MESA_INSERT('0,0::1,0::0,1::1,1',4,'Mesa junto al comedor.');
+call BOBP_MESA_INSERT('0,0::1,0::0,1::1,1',4,'Mesa junto al bar.','terraza1.jpg');
+call BOBP_MESA_INSERT('0,0::1,0::0,1::1,1',4,'Mesa junto al comedor.','terraza2.jpg');
 
 call BOBP_CLIENTE_INSERT('Miguel Piñol',1,'Tipical client.');
 call BOBP_CLIENTE_INSERT('Amadeo',2,'Tipical client.');
@@ -60,9 +60,14 @@ call BOBP_PAGO_SINSERT('2019-01-02','16:00:00',1,3,2); -- pago xabier iglesias
 call BOBP_PRODUCTO_PAGO_INSERT(2,3);
 call BOBP_PRODUCTO_PAGO_INSERT(3,4);*/
 call BOBP_ADD_PRODUCTO_TO_PAGO(2,1,1);
-call BOBP_ADD_PRODUCTO_TO_PAGO(3,2,2);
-call BOBP_ADD_PRODUCTO_TO_PAGO(4,3,3);
 call BOBP_ADD_PRODUCTO_TO_PAGO(6,1,1);
+call BOBP_FINALIZAR_PAGO(1,5.00);
+call BOBP_ADD_PRODUCTO_TO_PAGO(3,2,2);
+call BOBP_FINALIZAR_PAGO(2,50.00);
+call BOBP_FINALIZAR_MESA(2);
+call BOBP_ADD_PRODUCTO_TO_PAGO(4,3,3);
+call BOBP_FINALIZAR_PAGO(3,2.00);
+call BOBP_FINALIZAR_MESA(3);
 
 -- call BOBP_GET_ID_PRODUCTO_FROM_MESA(1);
 -- call BOBP_GET_PRODUCTO_FROM_MESA(1);

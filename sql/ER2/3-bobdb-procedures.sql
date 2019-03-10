@@ -13,11 +13,11 @@ set character set utf8;
 
 use BOBDB;
 
--- CREAR PROCEDURES -------------------------------------------------------------
+-- CREAR PROCEDURES ------------------------------------------------------------
 
 delimiter ;^
 
-    -- INSERT -------------------------------------------------------------------
+    -- INSERTS -----------------------------------------------------------------
 
     drop procedure if exists BOBP_CAMARERO_INSERT;^
     create procedure BOBP_CAMARERO_INSERT(
@@ -57,7 +57,9 @@ delimiter ;^
             set _new_id=_last_id+1;
         end if;
 
-        insert into BOBT_TIPO_PRODUCTO(id,nombre,precio_por_defecto,descripcion,img)
+        insert into BOBT_TIPO_PRODUCTO(
+                id,nombre,precio_por_defecto,descripcion,img
+            )
             values(_new_id,_nombre,_precio_por_defecto,_descripcion,_img);
 
     end;^
@@ -110,7 +112,8 @@ delimiter ;^
     create procedure BOBP_MESA_INSERT(
         in _localizacion varchar(400),
         in _id_comedor integer,
-        in _descripcion varchar(400)
+        in _descripcion varchar(400),
+        in _img varchar(200)
     ) begin
 
         declare _last_id integer;
@@ -123,8 +126,8 @@ delimiter ;^
             set _new_id=_last_id+1;
         end if;
 
-        insert into BOBT_MESA(id,localizacion,activo,id_comedor,descripcion)
-            values(_new_id,_localizacion,true,_id_comedor,_descripcion);
+        insert into BOBT_MESA(id,localizacion,activo,id_comedor,descripcion,img)
+            values(_new_id,_localizacion,true,_id_comedor,_descripcion,_img);
 
     end;^
 
@@ -208,7 +211,7 @@ delimiter ;^
 
     end;^
 
-    -- SHORT INSERT -------------------------------------------------------------
+    -- SHORT INSERTS -----------------------------------------------------------
 
     drop procedure if exists BOBP_CAMARERO_SINSERT;^
     create procedure BOBP_CAMARERO_SINSERT(
@@ -373,7 +376,7 @@ delimiter ;^
 
     end;^
 
-    -- GETTERS ------------------------------------------------------------------
+    -- GETTERS -----------------------------------------------------------------
 
     drop procedure if exists BOBP_GET_ID_PRODUCTO_FROM_MESA;^
     create procedure BOBP_GET_ID_PRODUCTO_FROM_MESA(
@@ -412,6 +415,19 @@ delimiter ;^
 
     end;^
 
+    drop procedure if exists BOBP_GET_ID_PRODUCTO_FROM_PAGO;^
+    create procedure BOBP_GET_ID_PRODUCTO_FROM_PAGO(
+        in _id_pago integer
+    ) begin
+
+        select BOBT_PRODUCTO_PAGO.id_producto
+        from BOBT_PAGO
+            join BOBT_PRODUCTO_PAGO
+                on BOBT_PRODUCTO_PAGO.id_pago = BOBT_PAGO.id
+        where BOBT_PRODUCTO_PAGO.id_pago = _id_pago;
+
+    end;^
+
     drop procedure if exists BOBP_GET_PRODUCTO_FROM_PAGO;^
     create procedure BOBP_GET_PRODUCTO_FROM_PAGO(
         in _id_pago integer
@@ -435,6 +451,8 @@ delimiter ;^
 
     end;^
 
+    -- VARIOS ------------------------------------------------------------------
+
     drop procedure if exists BOBP_ADD_PRODUCTO_TO_PAGO;^
     create procedure BOBP_ADD_PRODUCTO_TO_PAGO(
         in _id_producto integer,
@@ -448,9 +466,33 @@ delimiter ;^
 
     end;^
 
-    -- FALTAN -------------------------------------------------------------------
-    -- BOBP_GET_ID_PRODUCTO_FROM_PAGO
-    -- BOBP_FINALIZAR_PAGO(id_pago,cantidad_entregada)
-    -- BOBP_FINALIZAR_MESA(id_mesa)
+    drop procedure if exists BOBP_FINALIZAR_PAGO;^
+    create procedure BOBP_FINALIZAR_PAGO(
+        in _id_pago integer,
+        in _cantidad_entregada float
+    ) begin
+
+        update BOBT_PAGO
+            set cantidad_entregada = _cantidad_entregada
+            where id = _id_pago;
+        update BOBT_PAGO
+            set pagado = true
+            where id = _id_pago;
+
+    end;^
+
+    drop procedure if exists BOBP_FINALIZAR_MESA;^
+    create procedure BOBP_FINALIZAR_MESA(
+        in _id_mesa integer
+    ) begin
+
+        update BOBT_MESA
+            set activo = false
+            where id = _id_mesa;
+
+    end;^
+
+    -- FALTAN ------------------------------------------------------------------
+    -- ...
 
 delimiter ;
