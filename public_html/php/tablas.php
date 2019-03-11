@@ -45,7 +45,7 @@
 
         echo '
             <table border="1">
-                <tr><th colspan="3">BOBT_TIPO_PRODUCTO</th></tr>
+                <tr><th colspan="5">BOBT_TIPO_PRODUCTO</th></tr>
         ';
         /* fetch associative array */
         while ($row = $result->fetch_assoc()) {
