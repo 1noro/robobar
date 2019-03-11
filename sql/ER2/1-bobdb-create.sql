@@ -8,6 +8,6 @@
 */
 
 drop database if exists BOBDB;
-create database BOBDB
-    DEFAULT CHARACTER SET utf8
-    DEFAULT COLLATE utf8_general_ci;
+create database BOBDB;
+    /*DEFAULT CHARACTER SET utf8
+    DEFAULT COLLATE utf8_general_ci;*/

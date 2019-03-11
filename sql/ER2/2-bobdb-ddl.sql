@@ -8,8 +8,8 @@
 */
 
 -- PREVIOS ---------------------------------------------------------------------
-set NAMES utf8;
-set character set utf8;
+/*set NAMES utf8;
+set character set utf8;*/
 
 use BOBDB;
 
